@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>行程列表</title>
+    <script src="https://cdn.static.runoob.com/libs/jquery/1.8.3/jquery.js"></script>  
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+<div id="divtable"></div>
+<script>
+$.getJSON("http://localhost:8081", function(data) {
+    
+    console.log(data);
+    console.log(data.data.length);
+    var html = '<table class="table table-striped">'+'<th scope="col">日期</th>'+'<th  scope="col">时间</th>'+'<th  scope="col">行程</th>'+'<th  scope="col">按钮</th>';
+    for(var i = 0; i < data.data.length; i++)
+    {
+        html += '<tr >'+'<td>' + data.data[i]['date']+'</td>';
+        html += '<td>'+ data.data[i]['time'] + '</td>';
+        html += '<td>' + data.data[i]['route'] + '</td>';
+        //html += '<td><button onclick=del()>'+'删除'+'</button></td></tr>';
+        html +='<td><input type="button" value="删除" onclick=del('+i+')></td></tr>';
+       
+        
+    }
+    html += '</table>';
+    
+    $('#divtable').html(html); 
+});
+</script>
+<script type="text/javascript">
+    function del(a){
+        if(confirm("确定删除？")){
+        $.ajax({
+            url:"http://localhost:8081/dodelete",
+            async:true,
+            type:"post",
+            data:{id:a},
+            dataType: "json",
+            success:function(data){
+                console.log(data);
+                if(data!=null||data!=''){
+                    var html = '<table class="table table-striped">'+'<th scope="col">日期</th>'+'<th  scope="col">时间</th>'+'<th  scope="col">行程</th>'+'<th  scope="col">按钮</th>';
+                    for(var i = 0; i < data.data.length; i++)
+                    {
+                        html += '<tr >'+'<td>' + data.data[i]['date']+'</td>';
+                        html += '<td>'+ data.data[i]['time'] + '</td>';
+                        html += '<td>' + data.data[i]['route'] + '</td>';
+                        html +='<td><input type="button" value="删除" onclick=del('+i+')></td></tr>';
+                    }
+                    html += '</table>';
+                     $('#divtable').html(html); 
+                     alert("已经删除");
+                }
+            }
+        });
+    }      
+}
+</script>
+</body>
+
+</html>
